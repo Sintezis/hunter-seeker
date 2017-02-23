@@ -1,0 +1,149 @@
+<!doctype html>
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+<title>HunterSeeker</title>
+
+<!-- Bootstrap CSS -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+<link href="style.css" rel="stylesheet">
+<script   src="https://code.jquery.com/jquery-3.1.1.min.js"   integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="   crossorigin="anonymous"></script>
+<script type="text/javascript">
+	var map;
+	var infoWindow;
+	var service;
+	var placeSearch, autocomplete;
+	var request = {}
+
+	function initMap() {
+		infoWindow = new google.maps.InfoWindow();
+	  map = new google.maps.Map(document.getElementById('map'), {
+	    center: {lat: -33.867, lng: 151.206},
+	    zoom: 15,
+	  });
+	  
+	  service = new google.maps.places.PlacesService(map);
+   	autocomplete = new google.maps.places.Autocomplete(
+      (document.getElementById('select-location')),
+      {types: ['geocode']}
+    );
+
+    
+    autocomplete.addListener('place_changed', setLocation);
+	  map.addListener('idle', performSearch);
+	}
+
+	function setLocation() {
+		var place = autocomplete.getPlace(); 
+		request = {
+			location: place.geometry.location,
+			radius: null,
+			query: null
+		}
+	}
+
+	function performSearch() {
+		request.radius = document.getElementById('search-radius').value
+		request.query = document.getElementById('filter-query').value
+	  map.setCenter(request.location)
+	  service.textSearch(request, searchCallback);
+	}
+
+
+	//Search callback
+	function searchCallback(results, status) {
+	  if (status !== google.maps.places.PlacesServiceStatus.OK) {
+	    console.error(status);
+	    return;	
+	  }
+
+	  $('#found-locations').find("tr:gt(0)").remove();
+
+	  for (var i = 0, result; result = results[i]; i++) {
+	    addMarker(result);
+
+	    console.log(result)
+
+	    $('#found-locations tr:last').after('<tr><td>'+result.name+'</td><td>'+result.formatted_address+'</td><td><a target="_blank" href="#/" place-id="'+result.place_id+'">Website</a></td></tr>');
+			$('#found-locations tr:last a').bind('click', function(e){
+				e.preventDefault()
+				place_id = $(this).attr('place-id')
+				request = {
+					placeId: place_id
+				}
+				var newWindow = window.open('', '_blank')
+				service.getDetails(request, function(place, status) {
+				  if (status !== google.maps.places.PlacesServiceStatus.OK) {
+	        	console.error(status);
+	        	return;
+	      	}
+	      	newWindow.location = place.website
+
+				});
+
+			})
+
+	  }
+	}
+
+	function addMarker(place) {
+	  var marker = new google.maps.Marker({
+	    map: map,
+	    position: place.geometry.location,
+	    icon: {
+	      url: 'https://developers.google.com/maps/documentation/javascript/images/circle.png',
+	      anchor: new google.maps.Point(10, 10),
+	      scaledSize: new google.maps.Size(10, 17)
+	    }
+	  });
+
+	  //Display location info
+	  google.maps.event.addListener(marker, 'click', function() {
+	    service.getDetails(place, function(result, status) {
+	      if (status !== google.maps.places.PlacesServiceStatus.OK) {
+	        console.error(status);
+	        return;
+	      }
+	      infoWindow.setContent(result.adr_address);
+	      infoWindow.open(map, marker);
+	    });
+	  });
+	}
+
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBmvnNzmzs_L62wIPEuL5qzVQbmLxYMc_o&libraries=places&callback=initMap" async defer></script>
+
+<div class="snt-contanier container-fluid">
+  <div class="row">
+  	<div class="col-md-12">
+	  	<input type="text" id="select-location" class="snt-search-param-input" placeholder="Enter Location">
+	  	<input type="text" id="filter-query" class="snt-search-param-input" placeholder="Filter query">
+	  	<input type="text" id="search-radius" class="snt-search-param-input" placeholder="Search radius">
+	  	<button class="snt-btn btn btn-primary btn-lg" onclick="performSearch()">Search</button>
+	  	<div id="map"></div>
+	  </div>
+  </div>
+  <div class="row">
+  	<div class="col-md-12">
+	  	<h3>Found Locations</h3>
+	    <table class="table table-striped" id="found-locations">
+	    <tr>
+	    	<th>Title / Name</th>
+	    	<th>Address</th>
+	    	<th>Website</th>
+	    </tr>
+	  		
+			</table>
+		</div>
+  </div>
+
+</div>
+
+
+
+
+
+

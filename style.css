@@ -1,0 +1,51 @@
+ 
+/* Optional: Makes the sample page fill the window. */
+.snt-contanier {
+  height: 720px;
+  margin: 0;
+  padding: 0;
+}
+
+.snt-contanier {
+  height: 720px;
+  margin: 0;
+  padding: 0;
+}
+
+#map {
+	display: block;
+	margin: 0 auto;
+	height: 720px;
+	width: 100%;
+}
+
+.snt-btn {
+	position: absolute;
+	left: 100px;
+	z-index: 999;
+	top: 225px;
+}
+
+.snt-search-param-input {
+	position: absolute;
+	left: 100px;
+	z-index: 9999;
+	width: 450px;
+	height: 45px;
+	background-color: white;
+	color: black;
+}
+
+
+#filter-query {
+	top: 50px;
+}
+
+#search-radius {
+	top: 110px;
+}
+
+#select-location{
+	top: 170px;
+}
+
