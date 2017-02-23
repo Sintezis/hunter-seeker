@@ -107,7 +107,7 @@
 	    }
 	    else {
 	    	$('#found-locations tr:last')
-					.after('<tr><td>'+(places_count + 1)+'</td><td>'+place_data.name+'</td><td>'+place_data.formatted_address+'</td><td>'+place_data.international_phone_number+'</td><td><a target="_blank" href="'+place_data.website+'">'+place_data.website+'</a></td></tr>')
+					.after('<tr><td>'+(places_count + 1)+'</td><td>'+place_data.name+'</td><td>'+place_data.formatted_address+'</td><td>'+place_data.international_phone_number+'</td><td><a target="_blank" href="'+place_data.website+'">'+place_data.website+'</a></td><td>'+place_data.types+'</td></tr>')
 				places_count++
 				$('.total-count').html('Total found: '+places_count)
 	    }
@@ -139,6 +139,7 @@
 	    	<th>Address</th>
 	    	<th>Phone</th>
 	    	<th>Website</th>
+	    	<th>Keywords</th>
 	    </tr>
 	  		
 			</table>
