@@ -64,6 +64,7 @@
 
 	  for (var i = 0, result; result = results[i]; i++) {
 	    addMarker(result);
+	    fillTable(result)
 	  }
 	}
 
@@ -90,7 +91,7 @@
 	    });
 	  });
 
-	  function fillTable(){
+	  function fillTable(result){
 	  	$('#found-locations tr:last')
 	  		.after('<tr><td>'+result.name+'</td><td>'+result.formatted_address+'</td><td><a target="_blank" href="#/" place-id="'+result.place_id+'">Website</a></td></tr>');
 			
