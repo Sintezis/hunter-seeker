@@ -64,28 +64,6 @@
 
 	  for (var i = 0, result; result = results[i]; i++) {
 	    addMarker(result);
-
-	    console.log(result)
-
-	    $('#found-locations tr:last').after('<tr><td>'+result.name+'</td><td>'+result.formatted_address+'</td><td><a target="_blank" href="#/" place-id="'+result.place_id+'">Website</a></td></tr>');
-			$('#found-locations tr:last a').bind('click', function(e){
-				e.preventDefault()
-				place_id = $(this).attr('place-id')
-				request = {
-					placeId: place_id
-				}
-				var newWindow = window.open('', '_blank')
-				service.getDetails(request, function(place, status) {
-				  if (status !== google.maps.places.PlacesServiceStatus.OK) {
-	        	console.error(status);
-	        	return;
-	      	}
-	      	newWindow.location = place.website
-
-				});
-
-			})
-
 	  }
 	}
 
@@ -111,6 +89,28 @@
 	      infoWindow.open(map, marker);
 	    });
 	  });
+
+	  function fillTable(){
+	  	$('#found-locations tr:last')
+	  		.after('<tr><td>'+result.name+'</td><td>'+result.formatted_address+'</td><td><a target="_blank" href="#/" place-id="'+result.place_id+'">Website</a></td></tr>');
+			
+			$('#found-locations tr:last a').bind('click', function(e){
+				e.preventDefault()
+				place_id = $(this).attr('place-id')
+				request = {
+					placeId: place_id
+				}
+				var newWindow = window.open('', '_blank')
+				service.getDetails(request, function(place, status) {
+				  if (status !== google.maps.places.PlacesServiceStatus.OK) {
+	        	console.error(status);
+	        	return;
+	      	}
+	      	newWindow.location = place.website
+				});
+
+			})
+	  }
 	}
 
 </script>
