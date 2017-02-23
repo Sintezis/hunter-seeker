@@ -29,23 +29,22 @@
 .snt-search-param-input {
 	position: absolute;
 	left: 100px;
-	z-index: 9999;
+	z-index: 999;
 	width: 450px;
 	height: 45px;
 	background-color: white;
 	color: black;
 }
 
-
-#filter-query {
+#select-location{
 	top: 50px;
 }
 
-#search-radius {
+#filter-query {
 	top: 110px;
 }
 
-#select-location{
+#search-radius {
 	top: 170px;
 }
 

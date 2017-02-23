@@ -41,15 +41,15 @@
 		request = {
 			location: place.geometry.location,
 			radius: null,
-			query: null
+			keyword: null
 		}
 	}
 
 	function performSearch() {
 		request.radius = document.getElementById('search-radius').value
-		request.query = document.getElementById('filter-query').value
+		request.keyword = document.getElementById('filter-query').value
 	  map.setCenter(request.location)
-	  service.textSearch(request, searchCallback);
+	  service.radarSearch(request, searchCallback);
 	}
 
 
@@ -64,25 +64,7 @@
 
 	  for (var i = 0, result; result = results[i]; i++) {
 	    addMarker(result);
-
-	    $('#found-locations tr:last').after('<tr><td>'+result.name+'</td><td>'+result.formatted_address+'</td><td><a target="_blank" href="#/" place-id="'+result.place_id+'">Website</a></td></tr>');
-			$('#found-locations tr:last a').bind('click', function(e){
-				e.preventDefault()
-				place_id = $(this).attr('place-id')
-				request = {
-					placeId: place_id
-				}
-				var newWindow = window.open('', '_blank')
-				service.getDetails(request, function(place, status) {
-				  if (status !== google.maps.places.PlacesServiceStatus.OK) {
-	        	console.error(status);
-	        	return;
-	      	}
-	      	newWindow.location = place.website
-				});
-
-			})
-
+	    fillTable(result, i)
 	  }
 	}
 
@@ -91,7 +73,7 @@
 	    map: map,
 	    position: place.geometry.location,
 	    icon: {
-	      url: 'https://developers.google.com/maps/documentation/javascript/images/circle.png',
+	    	url: 'https://developers.google.com/maps/documentation/javascript/images/circle.png',
 	      anchor: new google.maps.Point(10, 10),
 	      scaledSize: new google.maps.Size(10, 17)
 	    }
@@ -108,6 +90,25 @@
 	      infoWindow.open(map, marker);
 	    });
 	  });
+	}
+
+	function fillTable(place, i) {
+		service.getDetails(place, function(place_data, status){
+	    if (status === google.maps.GeocoderStatus.OVER_QUERY_LIMIT) {
+        setTimeout(function() {
+          fillTable(place, i);
+        }, 200);
+      }
+	    else if (status !== google.maps.places.PlacesServiceStatus.OK) {
+        console.error(status);
+        return;
+	    }
+	    else {
+	    	$('#found-locations tr:last')
+					.after('<tr><td>'+(i + 1)+'</td><td>'+place_data.name+'</td><td>'+place_data.formatted_address+'</td><td>'+place_data.international_phone_number+'</td><td><a target="_blank" href="'+place_data.website+'">'+place_data.website+'</a></td></tr>')
+	    }
+			
+		})
 	}
 
 </script>
@@ -128,8 +129,10 @@
 	  	<h3>Found Locations</h3>
 	    <table class="table table-striped" id="found-locations">
 	    <tr>
+	    	<th>#</th>
 	    	<th>Title / Name</th>
 	    	<th>Address</th>
+	    	<th>Phone</th>
 	    	<th>Website</th>
 	    </tr>
 	  		
