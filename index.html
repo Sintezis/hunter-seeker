@@ -17,6 +17,7 @@
 	var service;
 	var placeSearch, autocomplete;
 	var request = {}
+	var places_count = 0
 
 	function initMap() {
 		infoWindow = new google.maps.InfoWindow();
@@ -61,10 +62,10 @@
 	  }
 
 	  $('#found-locations').find("tr:gt(0)").remove();
-
+	  places_count = 0
 	  for (var i = 0, result; result = results[i]; i++) {
 	    addMarker(result);
-	    fillTable(result, i)
+	    fillTable(result)
 	  }
 	}
 
@@ -92,11 +93,12 @@
 	  });
 	}
 
-	function fillTable(place, i) {
+	function fillTable(place) {
+
 		service.getDetails(place, function(place_data, status){
 	    if (status === google.maps.GeocoderStatus.OVER_QUERY_LIMIT) {
         setTimeout(function() {
-          fillTable(place, i);
+          fillTable(place);
         }, 200);
       }
 	    else if (status !== google.maps.places.PlacesServiceStatus.OK) {
@@ -105,7 +107,9 @@
 	    }
 	    else {
 	    	$('#found-locations tr:last')
-					.after('<tr><td>'+(i + 1)+'</td><td>'+place_data.name+'</td><td>'+place_data.formatted_address+'</td><td>'+place_data.international_phone_number+'</td><td><a target="_blank" href="'+place_data.website+'">'+place_data.website+'</a></td></tr>')
+					.after('<tr><td>'+(places_count + 1)+'</td><td>'+place_data.name+'</td><td>'+place_data.formatted_address+'</td><td>'+place_data.international_phone_number+'</td><td><a target="_blank" href="'+place_data.website+'">'+place_data.website+'</a></td></tr>')
+				places_count++
+				$('.total-count').html('Total found: '+places_count)
 	    }
 			
 		})
@@ -127,6 +131,7 @@
   <div class="row">
   	<div class="col-md-12">
 	  	<h3>Found Locations</h3>
+	  	<h4 class="total-count">Total Found:</h4>
 	    <table class="table table-striped" id="found-locations">
 	    <tr>
 	    	<th>#</th>
